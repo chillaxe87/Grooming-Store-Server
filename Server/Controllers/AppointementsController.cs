@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Server.Models;
 namespace Server.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class AppointementsController : ControllerBase
     {
@@ -22,6 +24,7 @@ namespace Server.Controllers
 
         // GET: api/Appointements
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Appointement>>> GetAppointements()
         {
             return await _context.Appointements.ToListAsync();
@@ -29,6 +32,7 @@ namespace Server.Controllers
 
         // GET: api/Appointements/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Appointement>> GetAppointement(int id)
         {
             var appointement = await _context.Appointements.FindAsync(id);
