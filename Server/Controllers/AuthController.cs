@@ -35,7 +35,8 @@ namespace Server.Controllers
             if (user != null && await userManager.CheckPasswordAsync(user, userCredits.Password))
             {
                 var token = jwtAuthenticationManager.Authenticate(userCredits.Email);
-                return Ok(token);
+                var result = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
+                return Ok(result);
             }
             return Unauthorized();
         }
@@ -62,11 +63,12 @@ namespace Server.Controllers
 
             if (!result.Succeeded)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+            var token = jwtAuthenticationManager.Authenticate(user.Email);
+            var newUser = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
 
-            return Ok(result);
+            return Ok(newUser);
         }
 
     }
