@@ -7,13 +7,12 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Auth
+namespace Server.Services
 {
-    public class JwtAuthenticationManager : IJwtAuthenticationManager
+    public class JwtAuthenticationService : IJwtAuthenticationService
     {
-
-        private readonly string key = "My test key is here";
-        public JwtAuthenticationManager()
+        public static readonly string key = "My_test_key_is_here";
+        public JwtAuthenticationService()
         {
             //this.key = key;
 
@@ -29,7 +28,7 @@ namespace Server.Auth
                 {
                     new Claim(ClaimTypes.Email, email)
                 }),
-                Expires = DateTime.UtcNow.AddHours(24),
+                Expires = DateTime.UtcNow.AddHours(48),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature)

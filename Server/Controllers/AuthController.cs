@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Server.Auth;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -17,12 +18,12 @@ namespace Server.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IJwtAuthenticationManager jwtAuthenticationManager;
+        private readonly IJwtAuthenticationService jwtAuthenticationService;
         private readonly UserManager<IdentityUser> userManager;
         //private readonly IConfiguration configuration;
-        public AuthController(IJwtAuthenticationManager jwtAuthenticationManager, UserManager<IdentityUser> userManager)
+        public AuthController(IJwtAuthenticationService jwtAuthenticationService, UserManager<IdentityUser> userManager)
         {
-            this.jwtAuthenticationManager = jwtAuthenticationManager;
+            this.jwtAuthenticationService = jwtAuthenticationService;
             this.userManager = userManager;
         }
 
@@ -34,7 +35,7 @@ namespace Server.Controllers
             var user = await userManager.FindByEmailAsync(userCredits.Email);
             if (user != null && await userManager.CheckPasswordAsync(user, userCredits.Password))
             {
-                var token = jwtAuthenticationManager.Authenticate(userCredits.Email);
+                var token = jwtAuthenticationService.Authenticate(userCredits.Email);
                 var result = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
                 return Ok(result);
             }
@@ -65,7 +66,7 @@ namespace Server.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            var token = jwtAuthenticationManager.Authenticate(user.Email);
+            var token = jwtAuthenticationService.Authenticate(user.Email);
             var newUser = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
 
             return Ok(newUser);

@@ -13,8 +13,8 @@ namespace Server.Models
         public string UserName { get; set; }
         public string UserId { get; set; }
         [Required]
-        public DateTime ScheduledForTime { get; set; }
+        public DateTime ScheduledFor { get; set; }
         [Required]
-        public DateTime ScheduledAtTime { get; set; }
+        public DateTime ScheduledAt{ get; set; }
     }
 }

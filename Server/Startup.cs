@@ -11,13 +11,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Server.Auth;
 using Server.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
+using Server.Services;
 
 namespace Server
 {
@@ -35,9 +37,14 @@ namespace Server
         {
 
             services.AddControllers();
-            var key = "My test key is here";
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
 
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
+            //services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
+            services.AddScoped<IJwtAuthenticationService, JwtAuthenticationService>();
+            services.AddScoped<AppointmentsService, AppointmentsService>();
 
             services.AddDbContext<ApplicationDbContext>(opts => {
                 opts.UseSqlServer(
@@ -66,7 +73,7 @@ namespace Server
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtAuthenticationService.key)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -87,10 +94,12 @@ namespace Server
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Server v1"));
             }
-
+         
             app.UseHttpsRedirection();
-
+      
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
