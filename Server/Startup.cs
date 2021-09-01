@@ -66,7 +66,7 @@ namespace Server
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
             }).AddJwtBearer(x =>
             {
                 x.RequireHttpsMetadata = false;
@@ -75,13 +75,13 @@ namespace Server
                 {
                     ValidateIssuerSigningKey = true,
 
-                    ValidateIssuer = false,
+                    ValidateIssuer = true,
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
 
-                    ValidateAudience = false,
+                    ValidateAudience = true,
                     ValidAudience = Configuration["JWT:ValidAudience"],
 
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
 

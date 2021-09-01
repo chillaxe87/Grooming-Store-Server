@@ -35,7 +35,7 @@ namespace Server.Controllers
             var user = await userManager.FindByEmailAsync(userCredits.Email);
             if (user != null && await userManager.CheckPasswordAsync(user, userCredits.Password))
             {
-                var token = jwtAuthenticationService.Authenticate(userCredits.Email);
+                var token = jwtAuthenticationService.Authenticate(user);
                 var result = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
                 return Ok(result);
             }
@@ -56,7 +56,7 @@ namespace Server.Controllers
             IdentityUser user = new()
             {
                 Email = registrationForm.Email,
-                SecurityStamp = Guid.NewGuid().ToString(), //check if id is nanoid automatically
+                SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registrationForm.Username
             };
 
@@ -66,7 +66,7 @@ namespace Server.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            var token = jwtAuthenticationService.Authenticate(user.Email);
+            var token = jwtAuthenticationService.Authenticate(user);
             var newUser = new UserResponseDTO() { Id = user.Id, UserName = user.UserName, Token = token };
 
             return Ok(newUser);

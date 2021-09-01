@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,22 @@ namespace Server.Services
         {
             _configuration = configuration;
         }
-        public string Authenticate(string email)
+        public string Authenticate(IdentityUser user)
         {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var tokenDescriptor = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                claims: Get_Claims(user),
+                expires: DateTime.Now.AddDays(2),
+                signingCredentials: signingCredentials
+                );
+
+            return tokenHandler.WriteToken(tokenDescriptor);
+            /*
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
 
@@ -41,7 +55,17 @@ namespace Server.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+            */
 
+        }
+        private static List<Claim> Get_Claims(IdentityUser user)
+        {
+            var claims = new List<Claim> { 
+                new Claim(ClaimTypes.Email, user.Email) ,
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };   //add id, add username
+            return claims;
         }
     }
 }
