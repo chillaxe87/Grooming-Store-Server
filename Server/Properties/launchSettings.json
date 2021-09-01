@@ -14,7 +14,6 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "SECRET_KEY": "My_test_key_is_here",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

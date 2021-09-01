@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,22 +12,26 @@ namespace Server.Services
 {
     public class JwtAuthenticationService : IJwtAuthenticationService
     {
-        public static readonly string key = "My_test_key_is_here";
-        public JwtAuthenticationService()
+        //private readonly string key = "My_test_key_is_here";
+        private readonly IConfiguration _configuration;
+        public JwtAuthenticationService(IConfiguration configuration)  
         {
-            //this.key = key;
-
+            _configuration = configuration;
         }
         public string Authenticate(string email)
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenKey = Encoding.ASCII.GetBytes(key);
+            var tokenKey = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+      
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Email, email)
+                    new Claim(JwtRegisteredClaimNames.Email, email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
                 }),
                 Expires = DateTime.UtcNow.AddHours(48),
                 SigningCredentials = new SigningCredentials(

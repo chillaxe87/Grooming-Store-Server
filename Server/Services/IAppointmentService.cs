@@ -8,8 +8,12 @@ namespace Server.Services
 {
     interface IAppointmentService
     {
-        IEnumerable<Appointement> GetAppointements(int page);
+        IEnumerable<Appointement> GetAppointements(string pageIndex, string pageSize);
         bool IsAppointmentExist(DateTime time);
         bool IsAppointmentInThePast(DateTime time);
+        IEnumerable<Appointement> GetAppointementsByDate(string dateString);
+        Task<IEnumerable<Appointement>> DeleteAppointement(int id);
+        Task<string> PostAppointement(Appointement appointement);
+        Task<string> PutAppointement(int id, Appointement appointement);
     }
 }

@@ -56,7 +56,7 @@ namespace Server.Controllers
             IdentityUser user = new()
             {
                 Email = registrationForm.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
+                SecurityStamp = Guid.NewGuid().ToString(), //check if id is nanoid automatically
                 UserName = registrationForm.Username
             };
 
